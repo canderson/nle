@@ -13,7 +13,7 @@
 #define NLE_TERM_CO 80
 #define NLE_TERM_LI 24
 
-/* #define NLE_ALLOW_SEEDING 1 */
+#define NLE_ALLOW_SEEDING 1
 
 typedef struct nle_observation {
     int action;
