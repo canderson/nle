@@ -381,18 +381,3 @@ class TestGymDynamics:
 
         assert done
         assert reward == 0.0
-
-
-class TestNetHackChallenge:
-    def test_no_seed_setting(self):
-        env = gym.make("NetHackChallenge-v0")
-        with pytest.raises(
-            RuntimeError, match="NetHackChallenge doesn't allow seed changes"
-        ):
-            env.seed()
-        with pytest.raises(RuntimeError, match="Should not try changing seeds"):
-            env.env.set_initial_seeds(0, 0, True)
-
-        if not nethack.NLE_ALLOW_SEEDING:
-            with pytest.raises(RuntimeError, match="Seeding not enabled"):
-                env.env._pynethack.set_initial_seeds(0, 0, True)
