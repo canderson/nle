@@ -126,6 +126,27 @@ class TestGymEnv:
             assert "playmode:debug" not in env.env._options
 
 
+class TestWizardMode:
+    def test_wizlevelport(self):
+        actions = (
+            list(nethack.USEFUL_ACTIONS)
+            + list(nethack.TextCharacters)
+            + list(nethack.WizardCommand)
+        )
+
+        env = gym.make(
+            "NetHack-v0",
+            wizard=True,
+            actions=actions,
+            allow_all_yn_questions=True,
+            allow_all_modes=True,
+        )
+        env.reset()
+        env.step(actions.index(nethack.WizardCommand.WIZLEVELPORT))
+        for c in b"10\r":
+            env.step(actions.index(c))
+
+
 class TestWizkit:
     @pytest.fixture(autouse=True)  # will be applied to all tests in class
     def make_cwd_tmp(self, tmpdir):
