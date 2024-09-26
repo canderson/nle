@@ -31,6 +31,7 @@ class TextCharacters(enum.IntEnum):
     NUM_8 = ord("8")
     NUM_9 = ord("9")
     DOLLAR = ord("$")  # TODO: Add SEE* actions instead (see PR #177).
+    QUESTION = ord("?")
 
 
 class CompassCardinalDirection(enum.IntEnum):
