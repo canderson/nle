@@ -49,8 +49,10 @@ class CMakeBuild(build_ext.build_ext):
         use_seeding = os.environ.get("USE_SEEDING", "ON")
         use_seeding = {"1": "ON", "0": "OFF"}.get(use_seeding, use_seeding.upper())
 
+        cmake = os.environ.get("CMAKE", "cmake")
+
         cmake_cmd = [
-            "cmake",
+            cmake,
             str(source_path),
             "-G%s" % generator,
             "-DPYTHON_SRC_PARENT=%s" % source_path,
@@ -65,8 +67,8 @@ class CMakeBuild(build_ext.build_ext):
             "-DUSE_SEEDING=%s" % use_seeding,
         ]
 
-        build_cmd = ["cmake", "--build", ".", "--parallel"]
-        install_cmd = ["cmake", "--install", "."]
+        build_cmd = [cmake, "--build", ".", "--parallel"]
+        install_cmd = [cmake, "--install", "."]
 
         try:
             subprocess.check_call(cmake_cmd, cwd=self.build_temp)
