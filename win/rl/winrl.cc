@@ -40,6 +40,7 @@ extern "C" {
  * is required to continue.
  */
 extern bool xwaitingforspace;
+extern bool in_getpos;
 
 /* some hack.h macros. Can be undefined here. */
 #undef Invisible
@@ -290,6 +291,57 @@ NetHackRL::fill_obs(nle_obs *obs)
         obs->misc[0] = in_yn_function;
         obs->misc[1] = in_getlin;
         obs->misc[2] = xwaitingforspace;
+
+        // misc[3]: prompt_type enum — what kind of input the game expects.
+        //
+        // Priority matters because flags overlap:
+        //
+        //  1. select_menu / get_ext_cmd (from win_proc_calls) — these use
+        //     xwaitforspace as their input loop, so they must be checked
+        //     before xwaitingforspace to avoid misreporting menus as
+        //     --More--.
+        //
+        //  2. xwaitingforspace — a --More-- that must be dismissed before
+        //     the outer prompt (yn_function, getlin) can proceed. Checked
+        //     before in_yn_function / in_getlin so the agent doesn't try
+        //     to answer a prompt that's blocked behind --More--.
+        //
+        //  3. in_getpos / in_yn_function / in_getlin — the outer prompt.
+        //
+        //  4. Fall through to NORMAL or UNKNOWN.
+        int prompt_type;
+        const std::string &outer = win_proc_calls.empty()
+            ? std::string() : win_proc_calls.front();
+        if (outer == "select_menu") {
+            prompt_type = NLE_PROMPT_SELECT_MENU;
+        } else if (outer == "get_ext_cmd") {
+            prompt_type = NLE_PROMPT_GET_EXT_CMD;
+        } else if (xwaitingforspace) {
+            prompt_type = NLE_PROMPT_DISPLAY_NHWINDOW;
+        } else if (in_getpos) {
+            prompt_type = NLE_PROMPT_GETPOS;
+        } else if (in_yn_function) {
+            prompt_type = NLE_PROMPT_YN_QUESTION;
+        } else if (in_getlin) {
+            prompt_type = NLE_PROMPT_GETLIN;
+        } else if (outer == "nh_poskey" || outer == "nhgetch") {
+            prompt_type = NLE_PROMPT_NORMAL;
+        } else {
+            prompt_type = NLE_PROMPT_UNKNOWN;
+            const std::string &outer = win_proc_calls.empty()
+                ? std::string() : win_proc_calls.front();
+            if (outer == "get_ext_cmd")
+                prompt_type = NLE_PROMPT_GET_EXT_CMD;
+            else if (outer == "select_menu")
+                prompt_type = NLE_PROMPT_SELECT_MENU;
+            else if (xwaitingforspace)
+                prompt_type = NLE_PROMPT_DISPLAY_NHWINDOW;
+            else if (outer == "nh_poskey" || outer == "nhgetch")
+                prompt_type = NLE_PROMPT_NORMAL;
+            else
+                prompt_type = NLE_PROMPT_UNKNOWN;
+        }
+        obs->misc[3] = prompt_type;
     }
 
     if ((!program_state.something_worth_saving && !program_state.in_moveloop)

@@ -6,7 +6,17 @@
 #define NLE_BLSTATS_SIZE 26
 #define NLE_PROGRAM_STATE_SIZE 6
 #define NLE_INTERNAL_SIZE 9
-#define NLE_MISC_SIZE 3
+#define NLE_MISC_SIZE 4
+
+/* misc[3] prompt_type enum: what kind of input is the game waiting for? */
+#define NLE_PROMPT_NORMAL 0          /* ready for a normal game command */
+#define NLE_PROMPT_YN_QUESTION 1     /* single-char prompt (y/n, direction, item) */
+#define NLE_PROMPT_GETLIN 2          /* text entry (engrave, name item) */
+#define NLE_PROMPT_GETPOS 3          /* cursor positioning (travel, targeting) */
+#define NLE_PROMPT_GET_EXT_CMD 4     /* extended command (#pray, #enhance) */
+#define NLE_PROMPT_SELECT_MENU 5     /* interactive menu selection */
+#define NLE_PROMPT_DISPLAY_NHWINDOW 6 /* blocking display (--More--, text) */
+#define NLE_PROMPT_UNKNOWN 7         /* unexpected state (for debugging) */
 #define NLE_INVENTORY_SIZE 55
 #define NLE_INVENTORY_STR_LENGTH 80
 #define NLE_SCREEN_DESCRIPTION_LENGTH 80

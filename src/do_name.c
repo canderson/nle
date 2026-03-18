@@ -624,6 +624,11 @@ int gloc;
     return (pick_cnt > 0);
 }
 
+/* Whether getpos() is active.  Read by the RL window proc (winrl.cc) to
+   distinguish cursor-positioning input from normal command input, since both
+   go through nh_poskey.  Cf. xwaitingforspace in getline.c. */
+boolean in_getpos;
+
 int
 getpos(ccp, force, goal)
 coord *ccp;
@@ -631,6 +636,7 @@ boolean force;
 const char *goal;
 {
     const char *cp;
+    in_getpos = TRUE;
     static struct {
         int nhkf, ret;
     } const pick_chars_def[] = {
@@ -982,6 +988,7 @@ const char *goal;
             free((genericptr_t) garr[i]);
     getpos_hilitefunc = (void FDECL((*), (int))) 0;
     getpos_getvalid = (boolean FDECL((*), (int, int))) 0;
+    in_getpos = FALSE;
     return result;
 }
 
