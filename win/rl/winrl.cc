@@ -557,18 +557,8 @@ NetHackRL::store_screen_description(XCHAR_P x, XCHAR_P y, int glyph)
     cc.x = x;
     cc.y = y;
 
-    /* lookat() (pager.c) records the described square in bhitpos, the
-       position of a missile in flight. Glyphs are printed while a thrown
-       object is animated, so without restoring it the missile resumes its
-       flight from the last monster drawn, lands at random, and panics the
-       game ("place_object: off map") when that square lies off the map. */
-    coord missile_position = bhitpos;
-    boolean described = do_screen_description(cc, TRUE, sym, tmpbuf,
-                                              &firstmatch,
-                                              (struct permonst **) 0);
-    bhitpos = missile_position;
-
-    if (described) {
+    if (do_screen_description(cc, TRUE, sym, tmpbuf, &firstmatch,
+                              (struct permonst **) 0)) {
         strncpy((char *) &screen_descriptions_ + start, firstmatch,
                 NLE_SCREEN_DESCRIPTION_LENGTH);
     } else {
